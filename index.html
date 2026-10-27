@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SI-PORSENI MANJ 2027</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 flex min-h-screen font-sans text-gray-800">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-[#0f285c] text-white hidden md:flex flex-col shadow-lg z-10">
+    <div class="p-6 flex items-center gap-3 border-b border-blue-900 bg-[#0a1f4a]">
+      <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-900 font-bold text-xs">MA</div>
+      <h1 class="font-bold text-lg leading-tight">SI-PORSENI<br><span class="text-sm font-normal text-gray-300">MANJ 2027</span></h1>
+    </div>
+    <nav class="flex-1 py-4 space-y-1">
+      <button onclick="bukaTab('dashboard')" class="w-full flex items-center px-6 py-3 text-gray-300 hover:bg-[#1a3673] hover:text-white transition focus:outline-none"><span class="mr-3">🏠</span> Dashboard</button>
+      <button onclick="bukaTab('input-jurnal')" class="w-full flex items-center px-6 py-3 bg-[#1a3673] text-white border-l-4 border-orange-500 font-medium focus:outline-none"><span class="mr-3">✏️</span> Input Jurnal</button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col h-screen overflow-y-auto relative">
+    <header class="bg-white p-4 shadow-sm flex justify-between items-center z-10 border-b">
+      <div class="flex items-center gap-4">
+        <!-- Logo Kemenag diperbaiki -->
+        <img src="https://kemenag.go.id/logo.png" class="h-10" alt="Kemenag" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_Kementerian_Agama_Republik_Indonesia.svg/512px-Logo_Kementerian_Agama_Republik_Indonesia.svg.png'">
+      </div>
+      <div class="flex items-center gap-3 pr-4">
+        <div class="text-right">
+          <p class="text-sm font-bold text-gray-800">Ust. Abd. Lathif Al Basyir</p>
+          <p class="text-xs text-gray-500">(Koordinator Lomba)</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="bg-gradient-to-r from-[#1e3a8a] via-[#3b82f6] to-[#f59e0b] p-8 shadow-sm text-white">
+      <h2 class="text-3xl font-bold mb-1">SI-PORSENI MA 2027</h2>
+      <p class="text-blue-100 text-lg">Sistem Monitoring Seleksi & Pembinaan Kontingen</p>
+    </div>
+
+    <!-- Halaman Dashboard -->
+    <div id="dashboard" class="p-6 md:p-8 hidden">
+      <h3 class="font-bold text-xl mb-4 text-gray-800">Halaman Dashboard (Segera Hadir)</h3>
+      <p class="text-gray-600">Bagian ini akan menampilkan grafik analitik dari data Google Sheets.</p>
+    </div>
+
+    <!-- Halaman Input Jurnal -->
+    <div id="input-jurnal" class="p-6 md:p-8 bg-slate-50">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:col-span-1">
+          <h3 class="font-bold text-lg mb-6 text-gray-800 border-b pb-3">Input Jurnal Latihan</h3>
+          <form id="formJurnal" onsubmit="kirimData(event)" class="space-y-4">
+            
+            <select id="cabang" required class="w-full p-2.5 border border-gray-300 rounded-lg">
+              <option value="">-- Pilih Cabang --</option>
+              <option value="Atletik">Atletik</option>
+              <option value="Pidato Bahasa Arab">Pidato Bahasa Arab</option>
+              <!-- Tambahkan opsi lain sesuai kebutuhan -->
+            </select>
+
+            <div class="grid grid-cols-2 gap-4">
+              <input type="date" id="tanggal" required class="w-full p-2.5 border border-gray-300 rounded-lg">
+              <input type="text" id="pertemuan" placeholder="Cth: TM 1" required class="w-full p-2.5 border border-gray-300 rounded-lg">
+            </div>
+
+            <input type="text" id="pic" placeholder="Nama PIC (Ust. Abul)" required class="w-full p-2.5 border border-gray-300 rounded-lg">
+            <textarea id="fokus" rows="2" placeholder="Fokus Latihan" required class="w-full p-2.5 border border-gray-300 rounded-lg"></textarea>
+            <textarea id="target" rows="2" placeholder="Target Capaian" required class="w-full p-2.5 border border-gray-300 rounded-lg"></textarea>
+            <textarea id="evaluasi" rows="2" placeholder="Evaluasi" required class="w-full p-2.5 border border-gray-300 rounded-lg"></textarea>
+
+            <button type="submit" id="tombolKirim" class="w-full bg-[#e8751a] hover:bg-[#d46513] text-white font-bold py-3 rounded-lg mt-4">
+              Kirim Jurnal
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // URL Web App Apps Script Anda (GANTI DENGAN URL BARU DARI TAHAP 1)
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz-7-Rt9nwvbxOATtqotFwSMsJLzZn7yFP7SIwBwrCYtJ_T4hhKM4RXcv_Mpu3c1iefxw/exec';
+
+    // Fungsi perpindahan Tab Menu
+    function bukaTab(tabId) {
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('input-jurnal').classList.add('hidden');
+      document.getElementById(tabId).classList.remove('hidden');
+    }
+
+    // Fungsi Kirim Data ke API Sheets
+    function kirimData(e) {
+      e.preventDefault(); 
+      const tombol = document.getElementById('tombolKirim');
+      tombol.innerText = 'Mengirim...';
+      tombol.disabled = true;
+
+      const data = {
+        pertemuan: document.getElementById('pertemuan').value,
+        tanggal: document.getElementById('tanggal').value,
+        cabang: document.getElementById('cabang').value,
+        pic: document.getElementById('pic').value,
+        fokus: document.getElementById('fokus').value,
+        target: document.getElementById('target').value,
+        evaluasi: document.getElementById('evaluasi').value
+      };
+
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' } // text/plain menghindari CORS error
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.pesan);
+        document.getElementById('formJurnal').reset();
+        tombol.innerText = 'Kirim Jurnal';
+        tombol.disabled = false;
+      })
+      .catch(error => {
+        alert('Gagal: ' + error.message);
+        tombol.innerText = 'Kirim Jurnal';
+        tombol.disabled = false;
+      });
+    }
+  </script>
+</body>
+</html>
