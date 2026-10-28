@@ -23,7 +23,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 flex h-screen overflow-hidden text-gray-800">
+<body class="bg-slate-50 flex h-screen overflow-hidden text-gray-800 w-full">
 
   <!-- SIDEBAR -->
   <aside id="sidebar" class="w-64 flex-shrink-0 bg-[#0a1f4a] text-white flex flex-col shadow-2xl z-30 absolute h-full md:relative transition-all duration-300">
@@ -62,8 +62,8 @@
 
   <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 hidden md:hidden" onclick="toggleSidebar()"></div>
 
-  <!-- MAIN AREA -->
-  <div class="flex-1 flex flex-col h-screen overflow-hidden">
+  <!-- MAIN AREA (Fixed White Space Bug with min-w-0 and w-full) -->
+  <div class="flex-1 flex flex-col h-screen overflow-hidden min-w-0 bg-slate-50 w-full">
     
     <header class="h-16 bg-white shadow-sm flex items-center justify-between px-4 lg:px-8 z-10 flex-shrink-0">
       <div class="flex items-center">
@@ -81,7 +81,7 @@
       </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto relative pb-20">
+    <main class="flex-1 overflow-y-auto relative pb-20 w-full">
       <div class="bg-gradient-to-r from-[#1e3a8a] via-[#2563eb] to-[#e8751a] px-8 py-10 text-white relative overflow-hidden shadow-md">
         <div class="relative z-10">
           <h2 class="text-3xl font-extrabold mb-2 tracking-wide">SI-PORSENI MANJ 2027</h2>
@@ -101,8 +101,8 @@
           <div onclick="bukaTab('logbook', 'menu-logbook')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 flex justify-between items-center cursor-pointer transition group">
             <div><p class="text-sm text-gray-500 mb-1 group-hover:text-orange-500">Total Sesi Latihan</p><p id="stat-latihan" class="text-3xl font-extrabold text-[#0a1f4a]">...</p></div><div class="bg-orange-50 p-4 rounded-full text-orange-500 text-2xl">📅</div>
           </div>
-          <div onclick="bukaTab('laporan', 'menu-laporan')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 flex justify-between items-center cursor-pointer transition group">
-            <div><p class="text-sm text-gray-500 mb-1 group-hover:text-green-600">Kepatuhan Logbook</p><p class="text-3xl font-extrabold text-[#0a1f4a]">100%</p></div><div class="bg-green-50 p-4 rounded-full text-green-500 text-2xl">✅</div>
+          <div class="bg-gradient-to-br from-red-50 to-orange-50 p-6 rounded-2xl shadow-sm border border-red-100 flex justify-between items-center group">
+            <div><p class="text-sm text-red-600 font-semibold mb-1">Menuju PORSENI</p><p id="stat-countdown" class="text-3xl font-extrabold text-red-700">...</p></div><div class="bg-red-100 p-4 rounded-full text-red-600 text-2xl">⏳</div>
           </div>
         </div>
         
@@ -123,14 +123,11 @@
               </table>
             </div>
           </div>
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center">
-            <h3 class="font-bold text-lg text-gray-800 border-b w-full pb-4 mb-4 text-center">Grafik Input Jurnal</h3>
-            <div class="w-full relative" style="height: 220px;">
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col w-full">
+            <h3 class="font-bold text-lg text-gray-800 border-b pb-4 mb-4 text-center">Grafik Sesi per Cabang</h3>
+            <!-- Chart Container (Bar Horizontal) -->
+            <div class="flex-1 w-full relative min-h-[300px]">
               <canvas id="kepatuhanChart"></canvas>
-              <div class="absolute inset-0 flex flex-col items-center justify-end pb-6 pointer-events-none">
-                 <span class="text-4xl font-extrabold text-[#0a1f4a]" id="chartTotalLabel">0</span>
-                 <span class="text-xs text-gray-500 font-medium uppercase">Total Sesi</span>
-              </div>
             </div>
           </div>
         </div>
@@ -240,7 +237,7 @@
 
       <!-- TAB 4: LOGBOOK TIMELINE -->
       <div id="tab-logbook" class="p-6 md:p-8 tab-content hidden">
-        <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-8 gap-4">
+        <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-6 gap-4">
           <div>
             <h2 class="text-3xl font-bold text-[#0a1f4a]">Buku Jurnal Latihan Lengkap</h2>
             <p class="text-gray-500 mt-1">Rekam jejak seluruh pembinaan dari awal hingga sesi terbaru.</p>
@@ -249,6 +246,10 @@
             <input type="text" id="cariLogbook" onkeyup="filterLogbook()" placeholder="🔍 Cari PIC / Cabang..." class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
           </div>
         </div>
+        
+        <!-- Wadah Rekapitulasi TM per PIC -->
+        <div id="rekapPicContainer" class="mb-6"></div>
+
         <div id="timelineContainer" class="space-y-6 max-w-6xl mx-auto">
            <div class="text-center py-20 text-gray-400 animate-pulse">Menyusun Timeline Buku Jurnal...</div>
         </div>
@@ -269,7 +270,7 @@
   </div>
 
   <script>
-    // MASUKKAN URL APPS SCRIPT BARU ANDA DI SINI
+    // URL WEB APP TELAH DITANAMKAN DI SINI
     const scriptURL = 'https://script.google.com/macros/s/AKfycbz-7-Rt9nwvbxOATtqotFwSMsJLzZn7yFP7SIwBwrCYtJ_T4hhKM4RXcv_Mpu3c1iefxw/exec'; 
     const PIN_KEAMANAN = '2027'; 
     let dataJurnalGlobal = []; 
@@ -307,8 +308,19 @@
       if(window.innerWidth < 768 && sidebarOpen) toggleSidebar();
     }
 
+    // --- HITUNG MUNDUR PORSENI ---
+    function hitungMundur() {
+      const target = new Date("2026-12-15T00:00:00").getTime();
+      const sekarang = new Date().getTime();
+      const selisih = target - sekarang;
+      let hari = Math.ceil(selisih / (1000 * 60 * 60 * 24));
+      if(hari < 0) hari = 0;
+      document.getElementById('stat-countdown').innerText = hari + " Hari";
+    }
+
     // --- FETCH LIVE DATA ---
     function muatLive() {
+      hitungMundur();
       fetch(scriptURL)
         .then(res => res.json())
         .then(data => {
@@ -319,6 +331,7 @@
           
           renderTabelPendek(dataJurnalGlobal);
           renderLogbookTimeline(dataJurnalGlobal);
+          renderRekapPIC(dataJurnalGlobal);
           renderChart(dataJurnalGlobal);
           renderGroupedSeleksi(dataAtletGlobal);
         }).catch(err => console.error(err));
@@ -344,9 +357,8 @@
     function renderGroupedSeleksi(atletArray) {
       const container = document.getElementById('containerSeleksiGroup');
       container.innerHTML = '';
-      if(atletArray.length === 0) {
-        container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400 bg-white rounded-2xl border border-gray-100">Belum ada data atlet.</div>'; return;
-      }
+      if(atletArray.length === 0) return container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400 bg-white rounded-2xl border border-gray-100">Belum ada data atlet.</div>';
+      
       const kelompok = {};
       atletArray.forEach(a => { if(!kelompok[a.cabang]) kelompok[a.cabang] = []; kelompok[a.cabang].push(a); });
 
@@ -368,15 +380,12 @@
               <div><h4 class="font-bold text-lg">${cabangName}</h4><p class="text-xs text-blue-200">${daftarSiswa.length} Atlet / Anggota</p></div>
               <span class="bg-white/10 text-white text-xs px-3 py-1 rounded-full font-medium border border-white/20">Kontingen</span>
             </div>
-            <div class="p-4">
-              <table class="w-full text-sm text-left">
+            <div class="p-4"><table class="w-full text-sm text-left">
                 <thead><tr class="text-[11px] font-bold uppercase text-gray-400 border-b pb-2">
                   <th class="py-2 px-3">Nama Siswa</th><th class="py-2 px-3">Posisi / Kategori</th><th class="py-2 px-3">Kelas</th>
                 </tr></thead>
                 <tbody>${rowsHtml}</tbody>
-              </table>
-            </div>
-          </div>`;
+              </table></div></div>`;
       });
     }
 
@@ -385,49 +394,65 @@
       renderGroupedSeleksi(dataAtletGlobal.filter(item => item.nama.toLowerCase().includes(k) || item.cabang.toLowerCase().includes(k) || item.kategori.toLowerCase().includes(k)));
     }
 
-    // --- TIMELINE LOGBOOK ---
+    // --- REKAPITULASI TM PER PIC ---
+    function renderRekapPIC(dataArray) {
+      const hitung = {};
+      dataArray.forEach(d => { hitung[d.pic] = (hitung[d.pic] || 0) + 1; });
+      let html = '<div class="flex flex-wrap gap-2">';
+      for(let pic in hitung) {
+        html += `<span class="bg-[#0a1f4a] text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm">${pic} <span class="bg-blue-500 text-white px-1.5 rounded ml-1">${hitung[pic]} Sesi</span></span>`;
+      }
+      html += '</div>';
+      document.getElementById('rekapPicContainer').innerHTML = html;
+    }
+
+    // --- TIMELINE LOGBOOK (Layout Grid 2x2 Sesuai Permintaan) ---
     function renderLogbookTimeline(dataArray) {
       const container = document.getElementById('timelineContainer');
       container.innerHTML = '';
-      if(dataArray.length === 0) {
-        container.innerHTML = '<div class="text-center py-20 text-gray-400 bg-white rounded-2xl border border-gray-100">Belum ada catatan jurnal.</div>'; return;
-      }
+      if(dataArray.length === 0) return container.innerHTML = '<div class="text-center py-20 text-gray-400 bg-white rounded-2xl border border-gray-100">Belum ada catatan jurnal.</div>';
+      
       dataArray.forEach((baris) => {
         let tgl = new Date(baris.tanggal).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
         let hasImage = baris.fotoUrl && baris.fotoUrl.includes('http');
-        let htmlImg = hasImage ? `<div class="mt-4"><img src="${baris.fotoUrl}" class="rounded-xl max-h-64 object-cover w-full sm:w-auto shadow-sm border border-gray-200 cursor-pointer" onclick="window.open('${baris.fotoUrl}', '_blank')" alt="Dokumentasi"></div>` : '';
+        let htmlImg = hasImage ? `<img src="${baris.fotoUrl}" class="rounded-xl w-full h-auto object-cover max-h-60 shadow-sm border border-gray-200 mt-4 sm:mt-0 cursor-pointer hover:opacity-90 transition" onclick="window.open('${baris.fotoUrl}', '_blank')" alt="Dokumentasi">` : '';
 
         container.innerHTML += `
         <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 relative group">
           <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#1e3a8a] to-[#e8751a] rounded-l-2xl"></div>
-          <div class="flex flex-col md:flex-row justify-between items-start gap-4">
-            <div class="flex-1 w-full">
-              <div class="flex items-center gap-3 mb-2">
-                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-md uppercase">${baris.pertemuan}</span>
-                <span class="text-sm font-medium text-gray-500">${tgl}</span>
-              </div>
-              <h3 class="text-2xl font-bold text-[#0a1f4a] mb-1">${baris.cabang}</h3>
-              <p class="text-sm text-gray-500 font-medium mb-5">Pembimbing: ${baris.pic}</p>
-              
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          
+          <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-5 border-b border-gray-50 pb-4">
+             <div>
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-md uppercase">${baris.pertemuan}</span>
+                  <span class="text-sm font-medium text-gray-500">${tgl}</span>
+                </div>
+                <h3 class="text-2xl font-bold text-[#0a1f4a] leading-tight">${baris.cabang}</h3>
+                <p class="text-sm text-gray-500 font-medium">Pembimbing: ${baris.pic}</p>
+             </div>
+             <div class="flex flex-row gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+               <button onclick="siapkanEdit('${baris.id}')" class="flex-1 sm:flex-none border-2 border-blue-700 text-blue-700 hover:bg-blue-700 hover:text-white font-semibold text-xs px-4 py-2 rounded-xl transition shadow-sm">✏️ Edit</button>
+               <button onclick="hapusJurnal('${baris.id}')" class="flex-1 sm:flex-none border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold text-xs px-4 py-2 rounded-xl transition shadow-sm">🗑️ Hapus</button>
+             </div>
+          </div>
+          
+          <!-- Layout Grid 2 Kolom untuk Teks, dan sisi untuk foto -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+             <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                   <p class="text-[11px] text-gray-400 font-bold uppercase mb-1">Fokus Materi</p><p class="text-sm text-gray-700">${baris.fokus}</p>
                 </div>
-                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100/50">
+                <div class="bg-blue-50/30 p-4 rounded-xl border border-blue-100/50">
                   <p class="text-[11px] text-blue-400 font-bold uppercase mb-1">Target Capaian</p><p class="text-sm text-gray-700">${baris.target}</p>
                 </div>
-                <div class="bg-orange-50/50 p-4 rounded-xl border border-orange-100/50">
+                <div class="bg-orange-50/30 p-4 rounded-xl border border-orange-100/50">
                   <p class="text-[11px] text-orange-400 font-bold uppercase mb-1">Evaluasi / Hasil</p><p class="text-sm text-gray-700">${baris.evaluasi}</p>
                 </div>
-                <div class="bg-green-50/50 p-4 rounded-xl border border-green-100/50">
+                <div class="bg-green-50/30 p-4 rounded-xl border border-green-100/50">
                   <p class="text-[11px] text-green-500 font-bold uppercase mb-1">Tindak Lanjut / PR</p><p class="text-sm text-gray-700">${baris.tindakLanjut}</p>
                 </div>
-              </div>
-              ${htmlImg}
-            </div>
-            <div class="flex-shrink-0 w-full md:w-auto mt-4 md:mt-0">
-               <button onclick="siapkanEdit('${baris.id}')" class="w-full md:w-auto border-2 border-[#1e3a8a] text-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white font-semibold text-sm px-6 py-2.5 rounded-xl transition shadow-sm">Edit Jurnal</button>
-            </div>
+             </div>
+             <div class="md:col-span-1 flex items-center justify-center">${htmlImg}</div>
           </div>
         </div>`;
       });
@@ -438,21 +463,35 @@
       renderLogbookTimeline(dataJurnalGlobal.filter(item => item.cabang.toLowerCase().includes(k) || item.pic.toLowerCase().includes(k) || item.fokus.toLowerCase().includes(k)));
     }
 
-    // --- CHART LOGIC ---
+    // --- CHART LOGIC (Horizontal Bar) ---
     function renderChart(dataArray) {
       const hitung = {};
       dataArray.forEach(d => { hitung[d.cabang] = (hitung[d.cabang] || 0) + 1; });
-      document.getElementById('chartTotalLabel').innerText = dataArray.length;
+      
       const ctx = document.getElementById('kepatuhanChart').getContext('2d');
       if (chartInstance) chartInstance.destroy(); 
       chartInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: { labels: Object.keys(hitung), datasets: [{ data: Object.values(hitung), backgroundColor: ['#1e3a8a', '#e8751a', '#3b82f6', '#10b981', '#f59e0b', '#6b7280', '#0ea5e9', '#ec4899', '#8b5cf6', '#14b8a6'], borderWidth: 0 }] },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '75%', rotation: -90, circumference: 180, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Poppins', size: 10 } } } } }
+        type: 'bar',
+        data: { 
+           labels: Object.keys(hitung), 
+           datasets: [{ 
+              label: 'Sesi Terlaksana',
+              data: Object.values(hitung), 
+              backgroundColor: '#1e3a8a', 
+              borderRadius: 4
+           }] 
+        },
+        options: { 
+           indexAxis: 'y', // Membuatnya horizontal agar 14 data muat rapi
+           responsive: true, 
+           maintainAspectRatio: false, 
+           plugins: { legend: { display: false } },
+           scales: { x: { beginAtZero: true, grid: { display: false } }, y: { grid: { display: false } } }
+        }
       });
     }
 
-    // --- EDIT & KIRIM FORM ---
+    // --- EDIT, HAPUS, & KIRIM FORM ---
     function siapkanEdit(id) {
       const data = dataJurnalGlobal.find(d => d.id === id);
       if(!data) return;
@@ -473,7 +512,30 @@
       document.getElementById('infoFotoMode').classList.remove('hidden');
 
       bukaTab('input', 'menu-input');
-      Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Siap Mengedit Data', showConfirmButton: false, timer: 2000 });
+      Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Mode Edit Aktif', showConfirmButton: false, timer: 2000 });
+    }
+
+    async function hapusJurnal(id) {
+      const { value: pin } = await Swal.fire({
+        title: 'Hapus Data Ini?', 
+        text: 'Data yang dihapus tidak bisa dikembalikan!',
+        input: 'password', inputLabel: 'Masukkan PIN', inputPlaceholder: '••••', 
+        icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33'
+      });
+      
+      if (!pin) return;
+      if (pin !== PIN_KEAMANAN) return Swal.fire('Ditolak', 'PIN Tidak Valid', 'error');
+
+      Swal.fire({title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
+      
+      fetch(scriptURL, { method: 'POST', body: JSON.stringify({ action: 'hapus', id: id }) })
+      .then(r => r.json())
+      .then(d => {
+        if (d.status === 'sukses') {
+          Swal.fire('Terhapus!', d.pesan, 'success');
+          muatLive();
+        } else Swal.fire('Error', d.pesan, 'error');
+      });
     }
 
     function resetForm() {
@@ -487,7 +549,7 @@
 
     async function konfirmasiKirim(e) {
       e.preventDefault();
-      const { value: pin } = await Swal.fire({ title: 'Verifikasi Keamanan', input: 'password', inputLabel: 'Masukkan PIN Koordinator', inputPlaceholder: '••••', confirmButtonColor: '#1e3a8a', showCancelButton: true });
+      const { value: pin } = await Swal.fire({ title: 'Verifikasi Keamanan', input: 'password', inputPlaceholder: '••••', confirmButtonColor: '#1e3a8a', showCancelButton: true });
       if (pin !== PIN_KEAMANAN) return Swal.fire('Ditolak', 'PIN Tidak Valid', 'error');
 
       const btn = document.getElementById('tombolKirim');
