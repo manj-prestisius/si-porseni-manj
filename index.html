@@ -5,248 +5,349 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SI-PORSENI MANJ 2027</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- SweetAlert2 untuk Pop-Up -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Chart.js untuk Grafik -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Menambahkan Font Poppins untuk kesan kekinian -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    /* Sidebar Transition */
+    #sidebar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .sidebar-closed { margin-left: -16rem; } /* 16rem = w-64 */
+    @media (min-width: 768px) {
+      .sidebar-closed { margin-left: 0; width: 5rem; }
+      .sidebar-closed .menu-text, .sidebar-closed .sidebar-logo-text { display: none; }
+      .sidebar-closed .menu-btn { justify-content: center; padding-left: 0; padding-right: 0; }
+      .sidebar-closed .menu-icon { margin-right: 0; }
+    }
+  </style>
 </head>
-<body class="bg-[#f4f7f6] flex min-h-screen font-sans text-gray-800">
+<body class="bg-slate-50 flex h-screen overflow-hidden text-gray-800">
 
   <!-- ================= SIDEBAR ================= -->
-  <aside class="w-64 bg-[#0a1f4a] text-white hidden md:flex flex-col shadow-2xl z-20">
-    <div class="p-6 flex items-center gap-3 border-b border-blue-900/50 bg-[#061433]">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_Kementerian_Agama_Republik_Indonesia.svg/512px-Logo_Kementerian_Agama_Republik_Indonesia.svg.png" class="h-10 w-10 bg-white rounded-full p-1" alt="Logo">
-      <h1 class="font-bold text-lg leading-tight">SI-PORSENI<br><span class="text-xs font-normal text-blue-300">MA NURUL JADID 2027</span></h1>
+  <aside id="sidebar" class="w-64 flex-shrink-0 bg-[#0a1f4a] text-white flex flex-col shadow-2xl z-30 absolute h-full md:relative transition-all duration-300">
+    <div class="h-16 flex items-center gap-3 px-5 border-b border-blue-900/50 bg-[#061433] whitespace-nowrap overflow-hidden">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_Kementerian_Agama_Republik_Indonesia.svg/512px-Logo_Kementerian_Agama_Republik_Indonesia.svg.png" class="h-9 w-9 bg-white rounded-full p-1 flex-shrink-0" alt="Logo">
+      <h1 class="font-bold text-lg leading-tight sidebar-logo-text">SI-PORSENI<br><span class="text-[10px] font-normal text-blue-300 uppercase tracking-wider">MA Nurul Jadid '27</span></h1>
     </div>
-    <nav class="flex-1 py-4 space-y-1">
-      <button onclick="bukaTab('dashboard', this)" class="menu-btn w-full flex items-center px-6 py-3.5 bg-[#1a3673] text-white border-l-4 border-[#e8751a] font-medium transition"><span class="mr-3 text-lg">🏠</span> Dashboard</button>
-      <button onclick="bukaTab('input', this)" class="menu-btn w-full flex items-center px-6 py-3.5 text-gray-400 hover:bg-[#1a3673] hover:text-white transition"><span class="mr-3 text-lg">✏️</span> Input Seleksi & Jurnal</button>
-      <button onclick="bukaTab('seleksi', this)" class="menu-btn w-full flex items-center px-6 py-3.5 text-gray-400 hover:bg-[#1a3673] hover:text-white transition"><span class="mr-3 text-lg">📋</span> Data Seleksi</button>
-      <button onclick="bukaTab('galeri', this)" class="menu-btn w-full flex items-center px-6 py-3.5 text-gray-400 hover:bg-[#1a3673] hover:text-white transition"><span class="mr-3 text-lg">📓</span> Jurnal Latihan (Logbook)</button>
-      <button onclick="bukaTab('laporan', this)" class="menu-btn w-full flex items-center px-6 py-3.5 text-gray-400 hover:bg-[#1a3673] hover:text-white transition"><span class="mr-3 text-lg">📊</span> Laporan Evaluasi</button>
+    
+    <nav class="flex-1 py-6 space-y-2 overflow-y-auto overflow-x-hidden px-3">
+      <button onclick="bukaTab('dashboard', 'menu-dashboard')" id="menu-dashboard" class="menu-btn w-full flex items-center px-4 py-3 bg-[#1a3673] text-white rounded-xl shadow-sm font-medium transition group">
+        <span class="menu-icon text-xl w-8 text-center flex-shrink-0 mr-3">🏠</span>
+        <span class="menu-text text-left text-sm">Dashboard Utama</span>
+      </button>
+      
+      <button onclick="bukaTab('input', 'menu-input')" id="menu-input" class="menu-btn w-full flex items-center px-4 py-3 text-gray-400 hover:bg-[#1a3673] hover:text-white rounded-xl transition group">
+        <span class="menu-icon text-xl w-8 text-center flex-shrink-0 mr-3">✏️</span>
+        <span class="menu-text text-left text-sm leading-tight">Input & Edit<br><span class="text-[10px] opacity-75">Jurnal Harian</span></span>
+      </button>
+      
+      <button onclick="bukaTab('seleksi', 'menu-seleksi')" id="menu-seleksi" class="menu-btn w-full flex items-center px-4 py-3 text-gray-400 hover:bg-[#1a3673] hover:text-white rounded-xl transition group">
+        <span class="menu-icon text-xl w-8 text-center flex-shrink-0 mr-3">📋</span>
+        <span class="menu-text text-left text-sm">Data Seleksi</span>
+      </button>
+      
+      <button onclick="bukaTab('logbook', 'menu-logbook')" id="menu-logbook" class="menu-btn w-full flex items-center px-4 py-3 text-gray-400 hover:bg-[#1a3673] hover:text-white rounded-xl transition group">
+        <span class="menu-icon text-xl w-8 text-center flex-shrink-0 mr-3">📓</span>
+        <span class="menu-text text-left text-sm leading-tight">Jurnal Latihan<br><span class="text-[10px] opacity-75">(Logbook Lengkap)</span></span>
+      </button>
+      
+      <button onclick="bukaTab('laporan', 'menu-laporan')" id="menu-laporan" class="menu-btn w-full flex items-center px-4 py-3 text-gray-400 hover:bg-[#1a3673] hover:text-white rounded-xl transition group">
+        <span class="menu-icon text-xl w-8 text-center flex-shrink-0 mr-3">📊</span>
+        <span class="menu-text text-left text-sm">Laporan Evaluasi</span>
+      </button>
     </nav>
   </aside>
 
-  <!-- ================= MAIN CONTENT ================= -->
-  <main class="flex-1 flex flex-col h-screen overflow-y-auto relative bg-slate-50">
+  <!-- Latar Gelap untuk Mobile saat Sidebar Terbuka -->
+  <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 hidden md:hidden" onclick="toggleSidebar()"></div>
+
+  <!-- ================= AREA KERJA UTAMA ================= -->
+  <div class="flex-1 flex flex-col h-screen overflow-hidden">
     
-    <!-- Top Header -->
-    <header class="bg-white p-4 shadow-sm flex justify-end items-center z-10 sticky top-0">
-      <div class="flex items-center gap-3 pr-4">
-        <div class="text-right">
+    <!-- HEADER BAR -->
+    <header class="h-16 bg-white shadow-sm flex items-center justify-between px-4 lg:px-8 z-10 flex-shrink-0">
+      <div class="flex items-center">
+        <!-- Tombol Hamburger -->
+        <button onclick="toggleSidebar()" class="text-gray-500 hover:text-blue-600 focus:outline-none mr-4 p-2 rounded-lg hover:bg-gray-100 transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <span class="font-semibold text-gray-700 hidden sm:block">Panel Koordinator</span>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <div class="text-right hidden sm:block">
           <p class="text-sm font-bold text-[#0a1f4a]">Ust. Abd. Lathif Al Basyir</p>
-          <p class="text-xs text-gray-500">(Koordinator Lomba)</p>
+          <p class="text-xs text-gray-500">Koordinator Olimpiade</p>
         </div>
-        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-800 font-bold border border-blue-200 shadow-sm">AL</div>
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center text-blue-800 font-bold border border-blue-300 shadow-inner">AL</div>
       </div>
     </header>
 
-    <!-- Banner (Style Asli Mockup) -->
-    <div class="bg-gradient-to-r from-[#1e3a8a] via-[#2563eb] to-[#e8751a] p-8 shadow-md text-white relative overflow-hidden">
-      <div class="relative z-10">
-        <h2 class="text-3xl font-extrabold mb-1 tracking-wide">SI-PORSENI MA 2027</h2>
-        <p class="text-blue-100 text-lg font-medium">Sistem Monitoring Seleksi & Pembinaan Kontingen</p>
-        <p class="text-blue-200 text-sm mt-1">MA NURUL JADID, PAITON, PROBOLINGGO</p>
+    <!-- KONTEN SCROLLABLE -->
+    <main class="flex-1 overflow-y-auto relative pb-20">
+      
+      <!-- Banner Selalu Rapi & Mengikuti Scroll -->
+      <div class="bg-gradient-to-r from-[#1e3a8a] via-[#2563eb] to-[#e8751a] px-8 py-10 text-white relative overflow-hidden shadow-md">
+        <div class="relative z-10">
+          <h2 class="text-3xl font-extrabold mb-2 tracking-wide">SI-PORSENI MA 2027</h2>
+          <p class="text-blue-100 text-lg font-medium opacity-90">Sistem Monitoring Seleksi & Pembinaan Kontingen</p>
+        </div>
+        <div class="absolute right-0 top-0 opacity-20 transform translate-x-1/4 -translate-y-1/4 pointer-events-none">
+          <svg width="350" height="350" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#FFFFFF" d="M45.7,-76.4C58.9,-69.3,69.1,-55.3,77.5,-40.8C85.9,-26.3,92.5,-11.3,91.2,2.9C89.9,17.1,80.7,30.5,70.9,42.7C61.1,54.9,50.7,65.9,37.8,73.4C24.9,80.9,9.5,84.9,-5.3,82.8C-20.1,80.7,-34.3,72.5,-47.5,63.1C-60.7,53.7,-72.9,43.1,-80.7,29.3C-88.5,15.5,-91.9,-1.5,-87.6,-16.4C-83.3,-31.3,-71.3,-44.1,-58.1,-51.9C-44.9,-59.7,-30.5,-62.5,-16.5,-64.5C-2.5,-66.5,11.1,-67.7,24.1,-68.8C37.1,-69.9,49.5,-70.9,45.7,-76.4Z" transform="translate(100 100)" /></svg>
+        </div>
       </div>
-      <!-- Ornamen Latar -->
-      <div class="absolute right-0 top-0 opacity-20 transform translate-x-1/4 -translate-y-1/4">
-        <svg width="300" height="300" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#FFFFFF" d="M45.7,-76.4C58.9,-69.3,69.1,-55.3,77.5,-40.8C85.9,-26.3,92.5,-11.3,91.2,2.9C89.9,17.1,80.7,30.5,70.9,42.7C61.1,54.9,50.7,65.9,37.8,73.4C24.9,80.9,9.5,84.9,-5.3,82.8C-20.1,80.7,-34.3,72.5,-47.5,63.1C-60.7,53.7,-72.9,43.1,-80.7,29.3C-88.5,15.5,-91.9,-1.5,-87.6,-16.4C-83.3,-31.3,-71.3,-44.1,-58.1,-51.9C-44.9,-59.7,-30.5,-62.5,-16.5,-64.5C-2.5,-66.5,11.1,-67.7,24.1,-68.8C37.1,-69.9,49.5,-70.9,45.7,-76.4Z" transform="translate(100 100)" /></svg>
-      </div>
-    </div>
 
-    <!-- ================= TAB 1: DASHBOARD ================= -->
-    <div id="tab-dashboard" class="p-6 md:p-8 space-y-6 tab-content block">
-      
-      <!-- Stats Cards (Desain Asli) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center hover:shadow-md transition">
-          <div><p class="text-sm text-gray-500 mb-1">Jumlah PIC Lomba</p><p class="text-3xl font-extrabold text-[#0a1f4a]">14</p></div><div class="bg-blue-50 p-3 rounded-full text-blue-500 text-2xl">👥</div>
+      <!-- ================= TAB 1: DASHBOARD ================= -->
+      <div id="tab-dashboard" class="p-6 md:p-8 space-y-8 tab-content block -mt-6 relative z-10">
+        
+        <!-- Kartu Statistik (CLICKABLE) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div onclick="bukaTab('seleksi', 'menu-seleksi')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 flex justify-between items-center cursor-pointer transform hover:-translate-y-1 transition-all duration-300 group">
+            <div><p class="text-sm text-gray-500 mb-1 group-hover:text-blue-600 transition">Jumlah PIC Lomba</p><p class="text-3xl font-extrabold text-[#0a1f4a]">14</p></div><div class="bg-blue-50 p-4 rounded-full text-blue-500 text-2xl group-hover:bg-blue-100 transition">👥</div>
+          </div>
+          <div onclick="bukaTab('seleksi', 'menu-seleksi')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 flex justify-between items-center cursor-pointer transform hover:-translate-y-1 transition-all duration-300 group">
+            <div><p class="text-sm text-gray-500 mb-1 group-hover:text-blue-600 transition">Total Atlet Seleksi</p><p id="stat-atlet" class="text-3xl font-extrabold text-[#0a1f4a]">...</p></div><div class="bg-indigo-50 p-4 rounded-full text-indigo-500 text-2xl group-hover:bg-indigo-100 transition">🏃</div>
+          </div>
+          <div onclick="bukaTab('logbook', 'menu-logbook')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 flex justify-between items-center cursor-pointer transform hover:-translate-y-1 transition-all duration-300 group">
+            <div><p class="text-sm text-gray-500 mb-1 group-hover:text-orange-500 transition">Latihan Terlaksana</p><p id="stat-latihan" class="text-3xl font-extrabold text-[#0a1f4a]">...</p></div><div class="bg-orange-50 p-4 rounded-full text-orange-500 text-2xl group-hover:bg-orange-100 transition">📅</div>
+          </div>
+          <div onclick="bukaTab('laporan', 'menu-laporan')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 flex justify-between items-center cursor-pointer transform hover:-translate-y-1 transition-all duration-300 group">
+            <div><p class="text-sm text-gray-500 mb-1 group-hover:text-green-600 transition">Kepatuhan Logbook</p><p class="text-3xl font-extrabold text-[#0a1f4a]">100%</p></div><div class="bg-green-50 p-4 rounded-full text-green-500 text-2xl group-hover:bg-green-100 transition">✅</div>
+          </div>
         </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center hover:shadow-md transition">
-          <div><p class="text-sm text-gray-500 mb-1">Total Atlet & Seniman</p><p id="stat-atlet" class="text-3xl font-extrabold text-[#0a1f4a]">...</p></div><div class="bg-blue-50 p-3 rounded-full text-blue-500 text-2xl">🏃</div>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center hover:shadow-md transition">
-          <div><p class="text-sm text-gray-500 mb-1">Latihan Terlaksana</p><p id="stat-latihan" class="text-3xl font-extrabold text-[#0a1f4a]">...</p></div><div class="bg-blue-50 p-3 rounded-full text-blue-500 text-2xl">📅</div>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center hover:shadow-md transition">
-          <div><p class="text-sm text-gray-500 mb-1">Kepatuhan Logbook</p><p class="text-3xl font-extrabold text-[#0a1f4a]">100%</p></div><div class="bg-green-50 p-3 rounded-full text-green-500 text-2xl">✅</div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Tabel Quick View -->
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:col-span-2 flex flex-col">
+            <div class="flex justify-between items-center border-b pb-4 mb-4">
+              <h3 class="font-bold text-lg text-gray-800">5 Jurnal Latihan Terakhir</h3>
+              <button onclick="bukaTab('logbook', 'menu-logbook')" class="text-sm text-blue-600 hover:text-blue-800 font-medium">Lihat Semua →</button>
+            </div>
+            <div class="overflow-x-auto flex-1">
+              <table class="w-full text-sm text-left text-gray-600" id="tabelRiwayatPendek">
+                <thead class="text-xs text-gray-400 uppercase bg-gray-50/50">
+                  <tr><th class="px-4 py-3">Tanggal</th><th class="px-4 py-3">Cabang & PIC</th><th class="px-4 py-3">Target Capaian</th></tr>
+                </thead>
+                <tbody id="tbodyPendek">
+                  <tr><td colspan="3" class="text-center py-10 text-gray-400">Memuat data Live...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Chart.js Kepatuhan -->
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center">
+            <h3 class="font-bold text-lg text-gray-800 border-b w-full pb-4 mb-4 text-center">Grafik Input PIC</h3>
+            <div class="w-full relative" style="height: 220px;">
+              <canvas id="kepatuhanChart"></canvas>
+              <div class="absolute inset-0 flex flex-col items-center justify-end pb-6 pointer-events-none">
+                 <span class="text-4xl font-extrabold text-[#0a1f4a]" id="chartTotalLabel">0</span>
+                 <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Latihan</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <!-- Layout Tabel & Grafik -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Tabel Riwayat -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:col-span-2 flex flex-col">
-          <div class="flex justify-between items-center border-b pb-4 mb-4">
-            <h3 class="font-bold text-lg text-gray-800">Riwayat Jurnal Latihan Terbaru</h3>
-            <input type="text" id="cariTabel" onkeyup="filterTabel()" placeholder="🔍 Cari Data..." class="p-2 border border-gray-300 rounded-lg text-sm w-48 bg-gray-50">
+
+      <!-- ================= TAB 2: INPUT JURNAL ================= -->
+      <div id="tab-input" class="p-6 md:p-8 tab-content hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-4xl mx-auto mt-4">
+          <div class="flex justify-between items-center border-b border-gray-200 pb-5 mb-8">
+            <h3 class="font-bold text-2xl text-[#0a1f4a]" id="formTitle">📝 Formulir Jurnal Latihan</h3>
+            <button type="button" onclick="resetForm()" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-5 rounded-full transition font-medium">Kosongkan Form</button>
           </div>
-          <div class="overflow-x-auto flex-1">
-            <table class="w-full text-sm text-left text-gray-600" id="tabelRiwayat">
-              <thead class="text-xs text-gray-700 bg-gray-50 rounded-lg">
-                <tr>
-                  <th class="px-4 py-3">Tanggal</th>
-                  <th class="px-4 py-3">Cabang Lomba</th>
-                  <th class="px-4 py-3">PIC</th>
-                  <th class="px-4 py-3">Target Capaian</th>
-                  <th class="px-4 py-3 text-center">Status</th>
-                </tr>
+          
+          <form id="formJurnal" onsubmit="konfirmasiKirim(event)" class="space-y-6">
+            <input type="hidden" id="actionMode" value="tambah">
+            <input type="hidden" id="dataId" value="">
+            <input type="hidden" id="fotoUrlLama" value="">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Latihan</label>
+                <input type="date" id="tanggal" required class="w-full p-3.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Pertemuan Ke-</label>
+                <input type="text" id="pertemuan" placeholder="Cth: TM 1, Seleksi" required class="w-full p-3.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Cabang Lomba</label>
+                <select id="cabang" required class="w-full p-3.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition appearance-none">
+                  <option value="">-- Pilih Cabang --</option>
+                  <option value="Atletik">Atletik</option>
+                  <option value="Futsal">Futsal</option>
+                  <option value="Bulu Tangkis">Bulu Tangkis</option>
+                  <option value="Tenis Meja">Tenis Meja</option>
+                  <option value="Pencak Silat">Pencak Silat</option>
+                  <option value="Bola Voli">Bola Voli</option>
+                  <option value="MTQ">MTQ</option>
+                  <option value="Fahmil Qur'an">Fahmil Qur'an</option>
+                  <option value="Tahfidz Qur'an">Tahfidz Qur'an</option>
+                  <option value="Kaligrafi">Kaligrafi</option>
+                  <option value="Desain Grafis">Desain Grafis</option>
+                  <option value="Pidato Bahasa Inggris">Pidato Bahasa Inggris</option>
+                  <option value="Pidato Bahasa Arab">Pidato Bahasa Arab</option>
+                  <option value="Cipta Baca Puisi">Cipta Baca Puisi</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama PIC (Pembimbing)</label>
+                <input type="text" id="pic" placeholder="Cth: Ust. Abul" required class="w-full p-3.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Fokus Latihan (Materi)</label>
+              <textarea id="fokus" rows="2" required class="w-full p-3.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Target Capaian (Indikator)</label>
+              <textarea id="target" rows="2" required class="w-full p-3.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Evaluasi & Tindak Lanjut</label>
+              <textarea id="evaluasi" rows="2" required class="w-full p-3.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
+            </div>
+
+            <div class="p-5 bg-blue-50/50 border border-blue-200 border-dashed rounded-xl relative">
+              <label class="block text-sm font-semibold text-blue-900 mb-2">📸 Upload Dokumentasi (Opsional - Maks 10MB)</label>
+              <input type="file" id="foto" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer transition">
+              <p id="infoFotoMode" class="text-xs text-orange-600 mt-2 font-medium hidden">⚠️ Mode Edit Aktif: Kosongkan jika tidak ingin mengganti foto yang lama.</p>
+            </div>
+
+            <button type="submit" id="tombolKirim" class="w-full bg-[#e8751a] hover:bg-[#d46513] text-white font-bold py-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 text-lg mt-6 flex justify-center items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+              Simpan & Kirim Jurnal
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================= TAB 3: DATA SELEKSI ================= -->
+      <div id="tab-seleksi" class="p-6 md:p-8 tab-content hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-gray-100 pb-5">
+            <div>
+              <h3 class="font-bold text-2xl text-[#0a1f4a] mb-1">Daftar Kontingen Atlet & Seniman</h3>
+              <p class="text-gray-500 text-sm">Data simulasi hasil seleksi tahap 1 madrasah.</p>
+            </div>
+            <span class="mt-3 sm:mt-0 bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-semibold shadow-sm">SK Diterbitkan</span>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-600">
+              <thead class="text-xs text-gray-500 uppercase bg-gray-50/80 rounded-lg">
+                <tr><th class="px-5 py-4 rounded-l-lg">Cabang Lomba</th><th class="px-5 py-4">Kategori</th><th class="px-5 py-4">Nama Siswa Terpilih</th><th class="px-5 py-4 rounded-r-lg">Kelas</th></tr>
               </thead>
-              <tbody id="tbodyRiwayat">
-                <tr><td colspan="5" class="text-center py-10 text-gray-500">Memuat data Live...</td></tr>
+              <tbody>
+                <tr class="border-b border-gray-50 hover:bg-blue-50/30 transition"><td class="px-5 py-4 font-semibold text-gray-800">Pidato B. Arab</td><td class="px-5 py-4">Putra</td><td class="px-5 py-4 font-medium text-blue-700">Ahmad Fauzan</td><td class="px-5 py-4">XI Agama 1</td></tr>
+                <tr class="border-b border-gray-50 hover:bg-blue-50/30 transition"><td class="px-5 py-4 font-semibold text-gray-800">Bulu Tangkis</td><td class="px-5 py-4">Putri</td><td class="px-5 py-4 font-medium text-blue-700">Siti Aisyah</td><td class="px-5 py-4">X MIPA 2</td></tr>
+                <tr class="border-b border-gray-50 hover:bg-blue-50/30 transition"><td class="px-5 py-4 font-semibold text-gray-800">MTQ</td><td class="px-5 py-4">Putra</td><td class="px-5 py-4 font-medium text-blue-700">Muhammad Rizky</td><td class="px-5 py-4">XI IPS 1</td></tr>
+                <tr class="hover:bg-blue-50/30 transition"><td class="px-5 py-4 font-semibold text-gray-800">Futsal</td><td class="px-5 py-4">Putra</td><td class="px-5 py-4 font-medium text-blue-700">Tim Futsal Utama (10 Siswa)</td><td class="px-5 py-4">Gabungan</td></tr>
               </tbody>
             </table>
           </div>
         </div>
+      </div>
 
-        <!-- Grafik Kepatuhan (Chart.js) -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center justify-center">
-          <h3 class="font-bold text-lg text-gray-800 border-b w-full pb-4 mb-4 text-center">Kepatuhan Input per PIC</h3>
-          <div class="w-full relative" style="height: 200px;">
-            <canvas id="kepatuhanChart"></canvas>
-            <!-- Angka di tengah donat -->
-            <div class="absolute inset-0 flex flex-col items-center justify-end pb-4 pointer-events-none">
-               <span class="text-3xl font-bold text-gray-800" id="chartTotalLabel">0</span>
-               <span class="text-xs text-gray-500">Total Input</span>
+      <!-- ================= TAB 4: LOGBOOK (TIMELINE RIWAYAT) ================= -->
+      <div id="tab-logbook" class="p-6 md:p-8 tab-content hidden">
+        <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-8 gap-4">
+          <div>
+            <h2 class="text-3xl font-bold text-[#0a1f4a] tracking-tight">Buku Jurnal Latihan Lengkap</h2>
+            <p class="text-gray-500 mt-1">Rekam jejak seluruh pembinaan dari awal hingga akhir.</p>
+          </div>
+          <div class="relative w-full md:w-72 shadow-sm">
+            <input type="text" id="cariLogbook" onkeyup="filterLogbook()" placeholder="🔍 Cari nama PIC atau Cabang..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ================= TAB 2: INPUT & EDIT ================= -->
-    <div id="tab-input" class="p-6 md:p-8 tab-content hidden">
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-4xl mx-auto">
-        <div class="flex justify-between items-center border-b pb-4 mb-6">
-          <h3 class="font-bold text-2xl text-[#0a1f4a]" id="formTitle">Formulir Jurnal Latihan (PIC)</h3>
-          <button type="button" onclick="resetForm()" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 px-4 rounded-full transition">Kosongkan Form</button>
         </div>
         
-        <form id="formJurnal" onsubmit="konfirmasiKirim(event)" class="space-y-5">
-          <input type="hidden" id="actionMode" value="tambah">
-          <input type="hidden" id="dataId" value="">
-          <input type="hidden" id="fotoUrlLama" value="">
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Tanggal</label>
-              <input type="date" id="tanggal" required class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Pertemuan Ke-</label>
-              <input type="text" id="pertemuan" placeholder="Cth: TM 1" required class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Cabang Lomba</label>
-              <select id="cabang" required class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg">
-                <option value="">-- Pilih Cabang --</option>
-                <option value="Atletik">Atletik</option>
-                <option value="Futsal">Futsal</option>
-                <option value="Bulu Tangkis">Bulu Tangkis</option>
-                <option value="Tenis Meja">Tenis Meja</option>
-                <option value="Pencak Silat">Pencak Silat</option>
-                <option value="Bola Voli">Bola Voli</option>
-                <option value="MTQ">MTQ</option>
-                <option value="Fahmil Qur'an">Fahmil Qur'an</option>
-                <option value="Tahfidz Qur'an">Tahfidz Qur'an</option>
-                <option value="Kaligrafi">Kaligrafi</option>
-                <option value="Desain Grafis">Desain Grafis</option>
-                <option value="Pidato Bahasa Inggris">Pidato Bahasa Inggris</option>
-                <option value="Pidato Bahasa Arab">Pidato Bahasa Arab</option>
-                <option value="Cipta Baca Puisi">Cipta Baca Puisi</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Nama PIC (Pembimbing)</label>
-              <input type="text" id="pic" placeholder="Cth: Ust. Abul" required class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Fokus Latihan (Materi Hari Ini)</label>
-            <textarea id="fokus" rows="2" required class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg"></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Target Capaian (Indikator)</label>
-            <textarea id="target" rows="2" required class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg"></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Evaluasi / Kondisi Siswa</label>
-            <textarea id="evaluasi" rows="2" required class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg"></textarea>
-          </div>
-
-          <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg border-dashed">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Upload Dokumentasi (Opsional - Maks 10MB)</label>
-            <input type="file" id="foto" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-            <p id="infoFotoMode" class="text-xs text-orange-600 mt-2 hidden">*Mode Edit: Biarkan kosong jika tidak merubah foto.</p>
-          </div>
-
-          <button type="submit" id="tombolKirim" class="w-full bg-[#e8751a] hover:bg-[#d46513] text-white font-bold py-4 rounded-xl shadow-md transition text-lg mt-4">
-            Kirim Jurnal Latihan
-          </button>
-        </form>
+        <!-- Timeline Container -->
+        <div id="timelineContainer" class="space-y-6 max-w-6xl mx-auto">
+           <div class="text-center py-20 text-gray-400 animate-pulse">Menyusun Timeline Buku Jurnal...</div>
+        </div>
       </div>
-    </div>
 
-    <!-- ================= TAB 3: DATA SELEKSI (SIMULASI) ================= -->
-    <div id="tab-seleksi" class="p-6 md:p-8 tab-content hidden">
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h3 class="font-bold text-xl text-[#0a1f4a] mb-4">Data Hasil Seleksi Siswa</h3>
-        <p class="text-gray-500 mb-6 text-sm">Daftar delegasi yang lolos tahap seleksi internal madrasah.</p>
-        <table class="w-full text-sm text-left text-gray-600">
-          <thead class="text-xs text-gray-700 bg-gray-50">
-            <tr><th class="px-4 py-3">Cabang Lomba</th><th class="px-4 py-3">Kategori</th><th class="px-4 py-3">Nama Siswa Terpilih</th><th class="px-4 py-3">Kelas</th></tr>
-          </thead>
-          <tbody>
-            <tr class="border-b"><td class="px-4 py-3 font-medium">Pidato B. Arab</td><td class="px-4 py-3">Putra</td><td class="px-4 py-3">Ahmad Fauzan</td><td class="px-4 py-3">XI Agama 1</td></tr>
-            <tr class="border-b"><td class="px-4 py-3 font-medium">Bulu Tangkis</td><td class="px-4 py-3">Putri</td><td class="px-4 py-3">Siti Aisyah</td><td class="px-4 py-3">X MIPA 2</td></tr>
-            <tr class="border-b"><td class="px-4 py-3 font-medium">MTQ</td><td class="px-4 py-3">Putra</td><td class="px-4 py-3">Muhammad Rizky</td><td class="px-4 py-3">XI IPS 1</td></tr>
-            <tr class="border-b"><td class="px-4 py-3 font-medium">Futsal</td><td class="px-4 py-3">Putra</td><td class="px-4 py-3">Tim Futsal Utama (10 Siswa)</td><td class="px-4 py-3">Gabungan</td></tr>
-          </tbody>
-        </table>
+      <!-- ================= TAB 5: LAPORAN ================= -->
+      <div id="tab-laporan" class="p-6 md:p-8 tab-content hidden">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-16 text-center max-w-3xl mx-auto mt-10">
+          <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <h3 class="font-bold text-3xl text-gray-800 mb-3">Pusat Laporan Evaluasi</h3>
+          <p class="text-gray-500 text-lg mb-8 max-w-lg mx-auto">Fitur penarikan laporan otomatis (Cetak PDF / Export Excel) khusus Koordinator sedang dalam tahap optimalisasi akhir.</p>
+          <button class="bg-[#0a1f4a] text-white px-8 py-3.5 rounded-xl font-semibold shadow-lg shadow-blue-900/20 opacity-80 cursor-not-allowed">Segera Hadir di V2.1</button>
+        </div>
       </div>
-    </div>
 
-    <!-- ================= TAB 4: GALERI LOGBOOK ================= -->
-    <div id="tab-galeri" class="p-6 md:p-8 tab-content hidden">
-      <h2 class="text-2xl font-bold text-[#0a1f4a] mb-6 border-b pb-2">Buku Jurnal (Galeri Visual)</h2>
-      <div id="gridGaleri" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <div class="col-span-full py-10 text-center text-gray-500">Memuat Galeri...</div>
-      </div>
-    </div>
-
-    <!-- ================= TAB 5: LAPORAN ================= -->
-    <div id="tab-laporan" class="p-6 md:p-8 tab-content hidden">
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center">
-        <p class="text-6xl mb-4">📑</p>
-        <h3 class="font-bold text-2xl text-gray-800 mb-2">Laporan Evaluasi Mingguan</h3>
-        <p class="text-gray-500">Fitur penarikan laporan otomatis (PDF/Excel) sedang dalam tahap pengembangan akhir.</p>
-        <button class="mt-6 bg-blue-100 text-blue-700 px-6 py-2 rounded-lg font-medium">Tersedia Segera</button>
-      </div>
-    </div>
-
-  </main>
+    </main>
+  </div>
 
   <!-- ================= JAVASCRIPT LOGIC ================= -->
   <script>
-    // MASUKKAN KEMBALI URL APPS SCRIPT ANDA DI SINI
+    // MASUKKAN URL APPS SCRIPT ANDA DI SINI! (Wajib)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbz-7-Rt9nwvbxOATtqotFwSMsJLzZn7yFP7SIwBwrCYtJ_T4hhKM4RXcv_Mpu3c1iefxw/exec'; 
     const PIN_KEAMANAN = '2027'; 
     let dataJurnalGlobal = []; 
     let chartInstance = null;
 
-    // --- NAVIGASI TAB ---
-    function bukaTab(idTab, elemen) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-      document.getElementById('tab-' + idTab).classList.remove('hidden');
+    // --- SIDEBAR TOGGLE LOGIC ---
+    let sidebarOpen = false;
+    // Deteksi jika di desktop, biarkan terbuka
+    if(window.innerWidth >= 768) { sidebarOpen = true; }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      sidebarOpen = !sidebarOpen;
       
-      document.querySelectorAll('.menu-btn').forEach(btn => {
-        btn.className = "menu-btn w-full flex items-center px-6 py-3.5 text-gray-400 hover:bg-[#1a3673] hover:text-white transition";
+      if(sidebarOpen) {
+        sidebar.classList.remove('sidebar-closed');
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('sidebar-closed');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    // --- NAVIGASI TAB ---
+    function bukaTab(idTab, idMenu) {
+      // Sembunyikan semua tab
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+        tab.classList.remove('block');
       });
-      elemen.className = "menu-btn w-full flex items-center px-6 py-3.5 bg-[#1a3673] text-white border-l-4 border-[#e8751a] font-medium transition";
+      // Tampilkan tab yang dipilih
+      document.getElementById('tab-' + idTab).classList.remove('hidden');
+      document.getElementById('tab-' + idTab).classList.add('block');
+      
+      // Reset Menu Style
+      document.querySelectorAll('.menu-btn').forEach(btn => {
+        btn.className = "menu-btn w-full flex items-center px-4 py-3 text-gray-400 hover:bg-[#1a3673] hover:text-white rounded-xl transition group";
+      });
+      // Set Active Menu Style
+      if(idMenu) {
+        document.getElementById(idMenu).className = "menu-btn w-full flex items-center px-4 py-3 bg-[#1a3673] text-white rounded-xl shadow-sm font-medium transition group";
+      }
+
+      // Di mobile, otomatis tutup sidebar setelah klik menu
+      if(window.innerWidth < 768 && sidebarOpen) { toggleSidebar(); }
     }
 
     // --- FETCH LIVE DATA ---
@@ -255,102 +356,146 @@
         .then(res => res.json())
         .then(data => {
           dataJurnalGlobal = data.jurnal; 
+          
+          // Update Dashboard
           document.getElementById('stat-latihan').innerText = data.jurnal.length;
           document.getElementById('stat-atlet').innerText = data.totalAtlet; 
           
-          renderTabel(data.jurnal);
-          renderGaleri(data.jurnal);
+          renderTabelPendek(data.jurnal);
+          renderLogbookTimeline(data.jurnal);
           renderChart(data.jurnal);
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+          console.error(err);
+          Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: 'Gagal memuat data live', showConfirmButton: false, timer: 3000 });
+        });
     }
 
-    // --- RENDER TABEL ---
-    function renderTabel(dataArray) {
-      const tbody = document.getElementById('tbodyRiwayat');
+    // --- RENDER TABEL PENDEK (DASHBOARD) ---
+    function renderTabelPendek(dataArray) {
+      const tbody = document.getElementById('tbodyPendek');
       tbody.innerHTML = '';
-      if(dataArray.length === 0) return tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Data Kosong</td></tr>';
+      if(dataArray.length === 0) return tbody.innerHTML = '<tr><td colspan="3" class="text-center py-8 text-gray-400">Data Kosong</td></tr>';
       
-      dataArray.forEach(baris => {
-        let tgl = new Date(baris.tanggal).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'});
-        let tr = `<tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-          <td class="px-4 py-3"><span class="font-medium text-gray-800">${tgl}</span><br><span class="text-xs text-gray-500">${baris.pertemuan}</span></td>
-          <td class="px-4 py-3 font-semibold text-[#1e3a8a]">${baris.cabang}</td>
-          <td class="px-4 py-3">${baris.pic}</td>
-          <td class="px-4 py-3 text-sm text-gray-600 line-clamp-1">${baris.target}</td>
-          <td class="px-4 py-3 text-center">
-             <button onclick="siapkanEdit('${baris.id}')" class="bg-[#1e3a8a] hover:bg-blue-800 text-white text-xs py-1.5 px-3 rounded shadow transition">Selesai / Edit</button>
-          </td>
+      // Hanya ambil 5 data terbaru
+      const dataTerbatas = dataArray.slice(0, 5);
+
+      dataTerbatas.forEach(baris => {
+        let tgl = new Date(baris.tanggal).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'});
+        let tr = `<tr class="border-b border-gray-50 hover:bg-gray-50 transition">
+          <td class="px-4 py-3 whitespace-nowrap"><span class="font-medium text-gray-700">${tgl}</span><br><span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">${baris.pertemuan}</span></td>
+          <td class="px-4 py-3"><p class="font-semibold text-[#1e3a8a] leading-tight">${baris.cabang}</p><p class="text-xs text-gray-500">${baris.pic}</p></td>
+          <td class="px-4 py-3 text-sm text-gray-600 line-clamp-2 italic">"${baris.target}"</td>
         </tr>`;
         tbody.innerHTML += tr;
       });
     }
 
-    function filterTabel() {
-      const keyword = document.getElementById('cariTabel').value.toLowerCase();
-      const filtered = dataJurnalGlobal.filter(item => 
-        item.cabang.toLowerCase().includes(keyword) || item.pic.toLowerCase().includes(keyword)
-      );
-      renderTabel(filtered);
+    // --- RENDER TIMELINE LOGBOOK (Buku Jurnal Lengkap) ---
+    function renderLogbookTimeline(dataArray) {
+      const container = document.getElementById('timelineContainer');
+      container.innerHTML = '';
+      
+      if(dataArray.length === 0) {
+        container.innerHTML = '<div class="text-center py-20 text-gray-400 bg-white rounded-2xl border border-gray-100">Belum ada catatan jurnal.</div>';
+        return;
+      }
+
+      dataArray.forEach((baris, index) => {
+        let tgl = new Date(baris.tanggal).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+        let hasImage = baris.fotoUrl && baris.fotoUrl.includes('http');
+        
+        let htmlImg = hasImage ? `<div class="mt-4"><img src="${baris.fotoUrl}" class="rounded-xl max-h-64 object-cover w-full sm:w-auto shadow-sm border border-gray-200 cursor-pointer hover:opacity-90 transition" onclick="window.open('${baris.fotoUrl}', '_blank')" alt="Dokumentasi"></div>` : '';
+
+        let card = `
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition relative group">
+          <!-- Pita Indikator Kiri -->
+          <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[#1e3a8a] to-[#e8751a] rounded-l-2xl opacity-80 group-hover:opacity-100"></div>
+          
+          <div class="flex flex-col md:flex-row justify-between items-start gap-4">
+            
+            <div class="flex-1 w-full">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wider">${baris.pertemuan}</span>
+                <span class="text-sm font-medium text-gray-500 flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> ${tgl}</span>
+              </div>
+              
+              <h3 class="text-2xl font-bold text-[#0a1f4a] mb-1">${baris.cabang}</h3>
+              <p class="text-sm text-gray-500 font-medium mb-5 flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> Pembimbing: ${baris.pic}</p>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <p class="text-xs text-gray-400 font-semibold uppercase mb-1">Fokus Materi</p>
+                  <p class="text-sm text-gray-700">${baris.fokus}</p>
+                </div>
+                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100/50">
+                  <p class="text-xs text-blue-400 font-semibold uppercase mb-1">Target Capaian</p>
+                  <p class="text-sm text-gray-700">${baris.target}</p>
+                </div>
+                <div class="bg-orange-50/50 p-4 rounded-xl border border-orange-100/50">
+                  <p class="text-xs text-orange-400 font-semibold uppercase mb-1">Evaluasi / Kondisi</p>
+                  <p class="text-sm text-gray-700">${baris.evaluasi}</p>
+                </div>
+              </div>
+              
+              ${htmlImg}
+            </div>
+            
+            <div class="flex-shrink-0 self-end md:self-start w-full md:w-auto mt-4 md:mt-0">
+               <button onclick="siapkanEdit('${baris.id}')" class="w-full md:w-auto bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] hover:bg-[#1e3a8a] hover:text-white font-semibold text-sm px-6 py-2.5 rounded-xl transition shadow-sm flex justify-center items-center gap-2">
+                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> Edit Jurnal
+               </button>
+            </div>
+
+          </div>
+        </div>`;
+        container.innerHTML += card;
+      });
     }
 
-    // --- RENDER CHART (Doughnut Kepatuhan) ---
-    function renderChart(dataArray) {
-      // Hitung jumlah input per cabang
-      const hitungCabang = {};
-      dataArray.forEach(d => {
-        hitungCabang[d.cabang] = (hitungCabang[d.cabang] || 0) + 1;
-      });
+    // Filter Pencarian di Tab Logbook
+    function filterLogbook() {
+      const keyword = document.getElementById('cariLogbook').value.toLowerCase();
+      const filtered = dataJurnalGlobal.filter(item => 
+        item.cabang.toLowerCase().includes(keyword) || 
+        item.pic.toLowerCase().includes(keyword) ||
+        item.fokus.toLowerCase().includes(keyword)
+      );
+      renderLogbookTimeline(filtered);
+    }
 
+    // --- RENDER CHART (Kepatuhan) ---
+    function renderChart(dataArray) {
+      const hitungCabang = {};
+      dataArray.forEach(d => { hitungCabang[d.cabang] = (hitungCabang[d.cabang] || 0) + 1; });
       const labelCabang = Object.keys(hitungCabang);
       const dataHitung = Object.values(hitungCabang);
       
       document.getElementById('chartTotalLabel').innerText = dataArray.length;
 
       const ctx = document.getElementById('kepatuhanChart').getContext('2d');
-      if (chartInstance) chartInstance.destroy(); // Hapus chart lama jika ada
-
+      if (chartInstance) chartInstance.destroy(); 
       chartInstance = new Chart(ctx, {
         type: 'doughnut',
         data: {
           labels: labelCabang,
           datasets: [{
             data: dataHitung,
-            backgroundColor: ['#1e3a8a', '#e8751a', '#3b82f6', '#10b981', '#6b7280', '#f59e0b'],
-            borderWidth: 2,
-            hoverOffset: 4
+            backgroundColor: ['#1e3a8a', '#e8751a', '#3b82f6', '#10b981', '#f59e0b', '#6b7280'],
+            borderWidth: 0,
+            hoverOffset: 6
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          rotation: -90, // Mulai dari kiri
-          circumference: 180, // Setengah lingkaran (Gauge)
+          cutout: '75%', // Bikin lingkarannya lebih tipis/elegan
+          rotation: -90, 
+          circumference: 180, 
           plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 12, font: {size: 10} } }
+            legend: { position: 'bottom', labels: { boxWidth: 10, padding: 15, font: { family: 'Poppins', size: 11 } } }
           }
         }
-      });
-    }
-
-    // --- RENDER GALERI ---
-    function renderGaleri(dataArray) {
-      const grid = document.getElementById('gridGaleri');
-      grid.innerHTML = '';
-      const dataBefoto = dataArray.filter(d => d.fotoUrl && d.fotoUrl.includes('http'));
-      if(dataBefoto.length === 0) return grid.innerHTML = '<div class="col-span-full py-10 text-center text-gray-500">Belum ada foto.</div>';
-
-      dataBefoto.forEach(item => {
-        grid.innerHTML += `
-          <div class="bg-white rounded-xl shadow border border-gray-100 overflow-hidden">
-            <div class="h-48 w-full bg-gray-200 bg-cover bg-center" style="background-image: url('${item.fotoUrl}')"></div>
-            <div class="p-4">
-              <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded">${item.pertemuan}</span>
-              <h4 class="font-bold text-gray-800 mt-2">${item.cabang}</h4>
-              <p class="text-xs text-gray-500 mb-2">Oleh: ${item.pic}</p>
-              <p class="text-xs text-gray-600 line-clamp-2">"${item.fokus}"</p>
-            </div>
-          </div>`;
       });
     }
 
@@ -370,12 +515,11 @@
       document.getElementById('target').value = data.target;
       document.getElementById('evaluasi').value = data.evaluasi;
       
-      document.getElementById('formTitle').innerText = "✏️ Mode Edit Jurnal";
-      document.getElementById('tombolKirim').innerText = "Simpan Perubahan";
+      document.getElementById('formTitle').innerText = "✏️ Edit Jurnal Latihan";
       document.getElementById('infoFotoMode').classList.remove('hidden');
 
-      bukaTab('input', document.querySelectorAll('.menu-btn')[1]);
-      Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Data siap diedit', showConfirmButton: false, timer: 1500 });
+      bukaTab('input', 'menu-input');
+      Swal.fire({ toast: true, position: 'top-end', icon: 'info', title: 'Siap Mengedit Data', showConfirmButton: false, timer: 2000 });
     }
 
     function resetForm() {
@@ -383,8 +527,7 @@
       document.getElementById('actionMode').value = 'tambah';
       document.getElementById('dataId').value = '';
       document.getElementById('fotoUrlLama').value = '';
-      document.getElementById('formTitle').innerText = "Formulir Jurnal Latihan (PIC)";
-      document.getElementById('tombolKirim').innerText = "Kirim Jurnal Latihan";
+      document.getElementById('formTitle').innerText = "📝 Formulir Jurnal Latihan";
       document.getElementById('infoFotoMode').classList.add('hidden');
     }
 
@@ -392,20 +535,26 @@
       e.preventDefault();
       
       const { value: pin } = await Swal.fire({
-        title: 'Verifikasi', input: 'password', inputPlaceholder: 'Masukkan PIN...', showCancelButton: true
+        title: 'Verifikasi Keamanan', 
+        input: 'password', 
+        inputLabel: 'Masukkan PIN Koordinator',
+        inputPlaceholder: '••••', 
+        confirmButtonColor: '#1e3a8a',
+        showCancelButton: true
       });
-      if (pin !== PIN_KEAMANAN) return Swal.fire('Ditolak', 'PIN Salah', 'error');
+      if (pin !== PIN_KEAMANAN) return Swal.fire('Ditolak', 'PIN Tidak Valid', 'error');
 
       const btn = document.getElementById('tombolKirim');
-      const textOri = btn.innerText;
-      btn.innerText = 'Mengunggah Data...'; btn.disabled = true;
+      const textOri = btn.innerHTML;
+      btn.innerHTML = '<span class="animate-pulse">Menyimpan & Mengunggah... ⏳</span>'; 
+      btn.disabled = true;
 
       const file = document.getElementById('foto').files[0];
       let base64 = "", nama = "";
       if (file) {
-        if(file.size > 10 * 1024 * 1024) { btn.disabled = false; btn.innerText = textOri; return Swal.fire('Gagal', 'Maksimal 10MB', 'warning'); }
+        if(file.size > 10 * 1024 * 1024) { btn.disabled = false; btn.innerHTML = textOri; return Swal.fire('Gagal', 'Ukuran foto maksimal 10MB', 'warning'); }
         base64 = await convertBase64(file);
-        nama = "IMG_" + new Date().getTime() + "_" + file.name;
+        nama = "PORSENI_" + new Date().getTime() + "_" + file.name;
       }
 
       const payload = {
@@ -426,10 +575,10 @@
       .then(r => r.json())
       .then(d => {
         if (d.status === 'sukses') {
-          Swal.fire('Berhasil', d.pesan, 'success');
-          resetForm(); muatLive(); bukaTab('dashboard', document.querySelectorAll('.menu-btn')[0]);
+          Swal.fire({title: 'Berhasil!', text: d.pesan, icon: 'success', confirmButtonColor: '#1e3a8a'});
+          resetForm(); muatLive(); bukaTab('logbook', 'menu-logbook'); // Pindah ke tab logbook setelah sukses
         } else Swal.fire('Error', d.pesan, 'error');
-      }).finally(() => { btn.disabled = false; btn.innerText = textOri; });
+      }).finally(() => { btn.disabled = false; btn.innerHTML = textOri; });
     }
 
     function convertBase64(file) {
