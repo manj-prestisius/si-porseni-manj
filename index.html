@@ -519,7 +519,7 @@
    KONFIGURASI
    ===================================================================== */
 const scriptURL = 'https://script.google.com/macros/s/AKfycbz-7-Rt9nwvbxOATtqotFwSMsJLzZn7yFP7SIwBwrCYtJ_T4hhKM4RXcv_Mpu3c1iefxw/exec';
-const TARGET_PORSENI = new Date(2027, 0, 1, 0, 0, 0);     // 1 Januari 2027
+const TARGET_PORSENI = new Date(2026, 11, 15, 0, 0, 0);   // 15 Desember 2026
 const MULAI_PEMBINAAN = new Date(2026, 8, 29, 0, 0, 0);   // Seleksi: 29 Sep 2026
 const SELASA_PERTAMA = '2026-10-06';                       // TM 1 (jadwal reguler tiap Selasa)
 const MAX_TM_OPSI = 16;                                    // pilihan TM / TM Extra pada form
@@ -890,7 +890,7 @@ function renderDashboard() {
 
   // Progres per cabang
   const st = statCabang();
-  $('#progNote').textContent = `TM reguler tiap Selasa — ${TOTAL_TM} pertemuan terjadwal sampai hari H (1 Jan 2027)`;
+  $('#progNote').textContent = `TM reguler tiap Selasa — ${TOTAL_TM} ... pertemuan terjadwal sampai hari H (15 Des 2026)`;
   $('#progGrid').innerHTML = nama.map(n => {
     const x = st[n], m = meta(n), pct = Math.min(100, Math.round(x.reg.size / TOTAL_TM * 100));
     return `<button data-act="goto-cabang" data-cabang="${esc(n)}" class="text-left rounded-2xl border border-slate-100 p-3.5 hover:border-indigo-200 hover:shadow-md transition group">
